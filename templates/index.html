@@ -3,166 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Performance Factors</title>
-    <!-- Google Fonts -->
+    <title>Student Performance Factors Project</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f8fa;
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            color: #333;
-            font-size: 14px; /* smaller font */
+            font-family: 'Inter', sans-serif;
         }
-
+        body {
+            background-color: #fdfdfd;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
         header {
-            background-color: #4a90e2;
-            color: #fff;
-            padding: 1.5rem 1rem;
             text-align: center;
+            margin-bottom: 40px;
         }
-
         header h1 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.5rem; /* smaller header */
+            font-size: 2.5rem;
+            color: #1a73e8;
+            margin-bottom: 10px;
         }
-
-        main {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        header p {
+            font-size: 1.1rem;
+            color: #555;
         }
-
         section {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 40px;
         }
-
-        section h2 {
-            margin-top: 0;
-            color: #4a90e2;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-size: 1.2rem; /* smaller section title */
+        h2 {
+            color: #1a73e8;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px; /* smaller table font */
+        ul {
+            list-style: none;
+            padding-left: 0;
         }
-
-        th, td {
-            text-align: left;
-            padding: 0.5rem 0.75rem;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background-color: #f0f4f8;
-            color: #333;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background-color: #f9faff;
-        }
-
-        .button-container {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-
-        .btn {
-            background-color: #4a90e2;
-            color: #fff;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
+        li {
+            background: #f0f4ff;
+            margin-bottom: 10px;
+            padding: 12px 15px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s;
+        }
+        li:hover {
+            background: #d9e4ff;
+        }
+        .prediction-button {
+            display: inline-block;
             text-decoration: none;
+            background-color: #1a73e8;
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
         }
-
-        .btn:hover {
-            background-color: #357abd;
+        .prediction-button:hover {
+            background-color: #155bb5;
         }
-
         footer {
             text-align: center;
-            padding: 1.5rem;
-            color: #888;
-            font-size: 0.8rem;
-        }
-
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.2rem;
-            }
-
-            th, td {
-                padding: 0.4rem 0.5rem;
-            }
+            margin-top: 60px;
+            font-size: 0.9rem;
+            color: #777;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Student Performance Factors</h1>
-    </header>
-    <main>
+    <div class="container">
+        <header>
+            <h1>Student Performance Factors Project</h1>
+            <p>Understanding the multiple factors affecting student performance and predicting exam outcomes using data-driven insights.</p>
+        </header>
+
         <section>
-            <h2>Dataset Description</h2>
-            <p>This dataset provides a comprehensive overview of various factors affecting student performance in exams. It includes information on study habits, attendance, parental involvement, and other aspects influencing academic success.</p>
+            <h2>About This Project</h2>
+            <p>
+                This project explores the various elements that can influence a student's academic performance. 
+                By analyzing attributes such as study habits, attendance, parental involvement, access to resources, 
+                motivation level, and more, we aim to understand how these factors correlate with exam scores. 
+                Additionally, the project leverages predictive modeling to estimate a student's potential exam performance 
+                based on these factors, helping educators, parents, and students make informed decisions to improve learning outcomes.
+            </p>
         </section>
 
         <section>
-            <h2>Column Descriptions</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Attribute</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Hours_Studied</td><td>Number of hours spent studying per week.</td></tr>
-                    <tr><td>Attendance</td><td>Percentage of classes attended.</td></tr>
-                    <tr><td>Parental_Involvement</td><td>Level of parental involvement in the student's education (Low, Medium, High).</td></tr>
-                    <tr><td>Access_to_Resources</td><td>Availability of educational resources (Low, Medium, High).</td></tr>
-                    <tr><td>Extracurricular_Activities</td><td>Participation in extracurricular activities (Yes, No).</td></tr>
-                    <tr><td>Sleep_Hours</td><td>Average number of hours of sleep per night.</td></tr>
-                    <tr><td>Previous_Scores</td><td>Scores from previous exams.</td></tr>
-                    <tr><td>Motivation_Level</td><td>Student's level of motivation (Low, Medium, High).</td></tr>
-                    <tr><td>Internet_Access</td><td>Availability of internet access (Yes, No).</td></tr>
-                    <tr><td>Tutoring_Sessions</td><td>Number of tutoring sessions attended per month.</td></tr>
-                    <tr><td>Family_Income</td><td>Family income level (Low, Medium, High).</td></tr>
-                    <tr><td>Teacher_Quality</td><td>Quality of the teachers (Low, Medium, High).</td></tr>
-                    <tr><td>School_Type</td><td>Type of school attended (Public, Private).</td></tr>
-                    <tr><td>Peer_Influence</td><td>Influence of peers on academic performance (Positive, Neutral, Negative).</td></tr>
-                    <tr><td>Physical_Activity</td><td>Average number of hours of physical activity per week.</td></tr>
-                    <tr><td>Learning_Disabilities</td><td>Presence of learning disabilities (Yes, No).</td></tr>
-                    <tr><td>Parental_Education_Level</td><td>Highest education level of parents (High School, College, Postgraduate).</td></tr>
-                    <tr><td>Distance_from_Home</td><td>Distance from home to school (Near, Moderate, Far).</td></tr>
-                    <tr><td>Gender</td><td>Gender of the student (Male, Female).</td></tr>
-                    <tr><td>Exam_Score</td><td>Final exam score.</td></tr>
-                </tbody>
-            </table>
-
-            <div class="button-container">
-                <a href="{{ url_for('predict_data')}}" class="btn">Go to Prediction Page</a>
-            </div>
+            <h2>Data Attributes</h2>
+            <ul>
+                <li><strong>Hours_Studied:</strong> Number of hours spent studying per week.</li>
+                <li><strong>Attendance:</strong> Percentage of classes attended.</li>
+                <li><strong>Parental_Involvement:</strong> Level of parental involvement (Low, Medium, High).</li>
+                <li><strong>Access_to_Resources:</strong> Availability of educational resources (Low, Medium, High).</li>
+                <li><strong>Extracurricular_Activities:</strong> Participation in extracurricular activities (Yes, No).</li>
+                <li><strong>Sleep_Hours:</strong> Average number of hours of sleep per night.</li>
+                <li><strong>Previous_Scores:</strong> Scores from previous exams.</li>
+                <li><strong>Motivation_Level:</strong> Student's level of motivation (Low, Medium, High).</li>
+                <li><strong>Internet_Access:</strong> Availability of internet access (Yes, No).</li>
+                <li><strong>Tutoring_Sessions:</strong> Number of tutoring sessions attended per month.</li>
+                <li><strong>Family_Income:</strong> Family income level (Low, Medium, High).</li>
+                <li><strong>Teacher_Quality:</strong> Quality of teachers (Low, Medium, High).</li>
+                <li><strong>School_Type:</strong> Type of school attended (Public, Private).</li>
+                <li><strong>Peer_Influence:</strong> Influence of peers (Positive, Neutral, Negative).</li>
+                <li><strong>Physical_Activity:</strong> Average hours of physical activity per week.</li>
+                <li><strong>Learning_Disabilities:</strong> Presence of learning disabilities (Yes, No).</li>
+                <li><strong>Parental_Education_Level:</strong> Highest education level of parents (High School, College, Postgraduate).</li>
+                <li><strong>Distance_from_Home:</strong> Distance from home to school (Near, Moderate, Far).</li>
+                <li><strong>Gender:</strong> Gender of the student (Male, Female).</li>
+                <li><strong>Exam_Score:</strong> Final exam score.</li>
+            </ul>
         </section>
-    </main>
 
-    <footer>
-        &copy; 2025 Student Performance Dataset
-    </footer>
+        <section style="text-align: center;">
+            <a href="{{url_for('predict_data')}}" class="prediction-button">Go to Prediction Page</a>
+        </section>
+
+        <footer>
+            &copy; 2025 Student Performance Factors Project
+        </footer>
+    </div>
 </body>
 </html>
