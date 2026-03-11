@@ -3,236 +3,690 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Performance Prediction</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Predict · Student Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #0d0d0f;
+            --paper: #f5f0e8;
+            --amber: #e8a020;
+            --amber-light: #f5c96a;
+            --rust: #c94a2a;
+            --sage: #4a7c6f;
+            --muted: #8a8070;
+            --card-bg: #ffffff;
+            --border: rgba(0,0,0,0.09);
+            --input-bg: #faf8f3;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f8fa;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            font-size: 14px;
+            background-color: var(--paper);
+            color: var(--ink);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        header {
-            background-color: #4a90e2;
+        /* noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.6;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            background: var(--ink);
+            padding: 0 60px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1rem;
             color: #fff;
-            padding: 1.5rem 1rem;
-            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        header h1 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.5rem;
+        .topbar-brand::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            display: inline-block;
         }
 
-        main {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        .topbar-back {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
         }
 
-        form {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem 2rem;
+        .topbar-back:hover { color: var(--amber); }
+
+        .topbar-back svg { transition: transform 0.2s; }
+        .topbar-back:hover svg { transform: translateX(-3px); }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            background: var(--ink);
+            padding: 60px 60px 80px;
+            position: relative;
+            overflow: hidden;
         }
 
-        label {
-            display: block;
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-            font-weight: 500;
-            color: #555;
+        .page-header::after {
+            content: 'PREDICT';
+            position: absolute;
+            right: 40px;
+            bottom: -30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 9rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.03);
+            letter-spacing: -0.04em;
+            pointer-events: none;
+            line-height: 1;
         }
 
-        input, select {
-            width: 100%;
-            padding: 0.4rem 0.6rem;
-            font-size: 0.85rem;
-            border: 1px solid #ccc;
+        .header-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fade-up 0.5s forwards 0.2s;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            max-width: 600px;
+            opacity: 0;
+            animation: fade-up 0.6s forwards 0.35s;
+        }
+
+        .page-header h1 em {
+            font-style: italic;
+            color: var(--amber-light);
+        }
+
+        .page-header p {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.45);
+            font-weight: 300;
+            max-width: 460px;
+            line-height: 1.7;
+            opacity: 0;
+            animation: fade-up 0.6s forwards 0.5s;
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 60px 100px;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            background-color: #fdfdfd;
+            overflow: hidden;
+            opacity: 0;
+            animation: fade-up 0.7s forwards 0.6s;
         }
 
-        .submit-btn {
-            grid-column: 1 / -1;
-            background-color: #4a90e2;
-            color: #fff;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
-            border-radius: 8px;
+        /* ── SECTION TABS ── */
+        .form-section {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section:last-of-type { border-bottom: none; }
+
+        .form-section-header {
+            padding: 20px 32px;
+            background: var(--input-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .fsec-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            color: var(--amber);
+            border: 1px solid rgba(232,160,32,0.4);
+            padding: 2px 7px;
+            border-radius: 2px;
+        }
+
+        .fsec-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .form-fields {
+            padding: 28px 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px 28px;
+        }
+
+        /* ── FIELD ── */
+        .field { display: flex; flex-direction: column; gap: 8px; }
+
+        .field label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 11px 14px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 400;
+            color: var(--ink);
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
         }
 
-        .submit-btn:hover {
-            background-color: #357abd;
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(232,160,32,0.12);
+            background: #fff;
         }
 
-        #result {
-            margin-top: 2rem;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            padding: 1.5rem;
+        .field input::placeholder { color: #bbb; }
+
+        /* number input hide arrows */
+        .field input[type=number]::-webkit-inner-spin-button,
+        .field input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        .field input[type=number] { -moz-appearance: textfield; }
+
+        /* ── SUBMIT ROW ── */
+        .submit-row {
+            padding: 28px 32px;
+            background: var(--input-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .submit-hint {
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        .submit-hint strong { color: var(--ink); font-weight: 600; }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--amber);
+            color: var(--ink);
+            border: none;
+            padding: 16px 36px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
             font-size: 0.9rem;
-            color: #333;
-            min-height: 50px;
+            letter-spacing: 0.02em;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        @media (max-width: 600px) {
-            form {
-                grid-template-columns: 1fr;
-            }
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--ink);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-submit:hover::before { transform: scaleX(1); }
+        .btn-submit:hover { color: var(--amber); }
+        .btn-submit span, .btn-submit svg { position: relative; z-index: 1; }
+
+        .btn-submit:active { transform: scale(0.98); }
+
+        /* ── RESULT PANEL ── */
+        .result-panel {
+            margin-top: 32px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fade-up 0.6s forwards 0.9s;
+        }
+
+        .result-header {
+            background: var(--ink);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            flex-shrink: 0;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .result-header-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .result-body {
+            background: var(--card-bg);
+            padding: 32px;
+            min-height: 80px;
+            font-size: 0.92rem;
+            color: #555;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        .result-body:empty::before {
+            content: 'Awaiting prediction — fill in the form above and submit.';
+            color: #bbb;
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+        }
+
+        /* score display if result contains a number */
+        .result-score {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--ink);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .result-score span { color: var(--amber); }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .footer-copy {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .topbar { padding: 0 24px; }
+            .page-header { padding: 50px 24px 60px; }
+            .main { padding: 40px 24px 80px; }
+            .form-fields { padding: 20px 20px; gap: 18px; }
+            .form-section-header { padding: 16px 20px; }
+            .submit-row { padding: 20px; }
+            footer { padding: 24px; flex-direction: column; gap: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .form-fields { grid-template-columns: 1fr; }
+            .submit-row { flex-direction: column; align-items: stretch; }
+            .btn-submit { justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Student Performance Prediction</h1>
-    </header>
 
-    <main>
-        <form id="predictionForm" method="POST" action="{{url_for('predict_data')}}">
-            <!-- Numeric Fields -->
-            <div>
-                <label for="Hours_Studied">Hours Studied</label>
-                <input type="number" step="0.1" name="Hours_Studied" id="Hours_Studied" required>
-            </div>
-            <div>
-                <label for="Attendance">Attendance (%)</label>
-                <input type="number" step="0.1" name="Attendance" id="Attendance" required>
-            </div>
-            <div>
-                <label for="Sleep_Hours">Sleep Hours</label>
-                <input type="number" step="0.1" name="Sleep_Hours" id="Sleep_Hours" required>
-            </div>
-            <div>
-                <label for="Previous_Scores">Previous Scores</label>
-                <input type="number" step="0.1" name="Previous_Scores" id="Previous_Scores" required>
-            </div>
-            <div>
-                <label for="Tutoring_Sessions">Tutoring Sessions</label>
-                <input type="number" step="0.1" name="Tutoring_Sessions" id="Tutoring_Sessions" required>
-            </div>
-            <div>
-                <label for="Physical_Activity">Physical Activity (hrs/week)</label>
-                <input type="number" step="0.1" name="Physical_Activity" id="Physical_Activity" required>
-            </div>
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<nav class="topbar">
+    <a href="/" class="topbar-brand">Student Performance</a>
+    <a href="/" class="topbar-back">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M10 7H4M4 7L7 4M4 7L7 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Overview
+    </a>
+</nav>
 
-            <!-- Categorical Fields -->
-            <div>
-                <label for="Parental_Involvement">Parental Involvement</label>
-                <select name="Parental_Involvement" id="Parental_Involvement" required>
-                    <option value="">Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
-            </div>
+<!-- ═══════════════ PAGE HEADER ═══════════════ -->
+<header class="page-header">
+    <div class="header-eyebrow">// Predictive Model · ML Inference</div>
+    <h1>Predict <em>Exam Score</em></h1>
+    <p>Enter the student's profile data below. Our model will estimate the expected exam performance based on 19 input factors.</p>
+</header>
 
-            <div>
-                <label for="Access_to_Resources">Access to Resources</label>
-                <select name="Access_to_Resources" id="Access_to_Resources" required>
-                    <option value="">Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main class="main">
+
+    <form id="predictionForm" method="POST" action="{{url_for('predict_data')}}">
+        <div class="form-card">
+
+            <!-- SECTION 1: Academic -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <span class="fsec-num">01</span>
+                    <span class="fsec-title">Academic Habits</span>
+                </div>
+                <div class="form-fields">
+                    <div class="field">
+                        <label for="Hours_Studied">Hours Studied / week</label>
+                        <input type="number" step="0.1" name="Hours_Studied" id="Hours_Studied" placeholder="e.g. 12" required>
+                    </div>
+                    <div class="field">
+                        <label for="Attendance">Attendance (%)</label>
+                        <input type="number" step="0.1" name="Attendance" id="Attendance" placeholder="e.g. 85" required>
+                    </div>
+                    <div class="field">
+                        <label for="Previous_Scores">Previous Scores</label>
+                        <input type="number" step="0.1" name="Previous_Scores" id="Previous_Scores" placeholder="e.g. 72" required>
+                    </div>
+                    <div class="field">
+                        <label for="Tutoring_Sessions">Tutoring Sessions / month</label>
+                        <input type="number" step="0.1" name="Tutoring_Sessions" id="Tutoring_Sessions" placeholder="e.g. 3" required>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="Extracurricular_Activities">Extracurricular Activities</label>
-                <select name="Extracurricular_Activities" id="Extracurricular_Activities" required>
-                    <option value="">Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
+            <!-- SECTION 2: Lifestyle -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <span class="fsec-num">02</span>
+                    <span class="fsec-title">Lifestyle & Wellbeing</span>
+                </div>
+                <div class="form-fields">
+                    <div class="field">
+                        <label for="Sleep_Hours">Sleep Hours / night</label>
+                        <input type="number" step="0.1" name="Sleep_Hours" id="Sleep_Hours" placeholder="e.g. 7" required>
+                    </div>
+                    <div class="field">
+                        <label for="Physical_Activity">Physical Activity (hrs/week)</label>
+                        <input type="number" step="0.1" name="Physical_Activity" id="Physical_Activity" placeholder="e.g. 4" required>
+                    </div>
+                    <div class="field">
+                        <label for="Extracurricular_Activities">Extracurricular Activities</label>
+                        <select name="Extracurricular_Activities" id="Extracurricular_Activities" required>
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Motivation_Level">Motivation Level</label>
+                        <select name="Motivation_Level" id="Motivation_Level" required>
+                            <option value="">Select</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="Motivation_Level">Motivation Level</label>
-                <select name="Motivation_Level" id="Motivation_Level" required>
-                    <option value="">Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
+            <!-- SECTION 3: Environment -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <span class="fsec-num">03</span>
+                    <span class="fsec-title">Family & Environment</span>
+                </div>
+                <div class="form-fields">
+                    <div class="field">
+                        <label for="Parental_Involvement">Parental Involvement</label>
+                        <select name="Parental_Involvement" id="Parental_Involvement" required>
+                            <option value="">Select</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Family_Income">Family Income</label>
+                        <select name="Family_Income" id="Family_Income" required>
+                            <option value="">Select</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Parental_Education_Level">Parental Education Level</label>
+                        <select name="Parental_Education_Level" id="Parental_Education_Level" required>
+                            <option value="">Select</option>
+                            <option value="High School">High School</option>
+                            <option value="College">College</option>
+                            <option value="Postgraduate">Postgraduate</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Distance_from_Home">Distance from Home</label>
+                        <select name="Distance_from_Home" id="Distance_from_Home" required>
+                            <option value="">Select</option>
+                            <option value="Near">Near</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Far">Far</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="Internet_Access">Internet Access</label>
-                <select name="Internet_Access" id="Internet_Access" required>
-                    <option value="">Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
+            <!-- SECTION 4: School & Social -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <span class="fsec-num">04</span>
+                    <span class="fsec-title">School & Social Factors</span>
+                </div>
+                <div class="form-fields">
+                    <div class="field">
+                        <label for="Access_to_Resources">Access to Resources</label>
+                        <select name="Access_to_Resources" id="Access_to_Resources" required>
+                            <option value="">Select</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Internet_Access">Internet Access</label>
+                        <select name="Internet_Access" id="Internet_Access" required>
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Teacher_Quality">Teacher Quality</label>
+                        <select name="Teacher_Quality" id="Teacher_Quality" required>
+                            <option value="">Select</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="School_Type">School Type</label>
+                        <select name="School_Type" id="School_Type" required>
+                            <option value="">Select</option>
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Peer_Influence">Peer Influence</label>
+                        <select name="Peer_Influence" id="Peer_Influence" required>
+                            <option value="">Select</option>
+                            <option value="Positive">Positive</option>
+                            <option value="Neutral">Neutral</option>
+                            <option value="Negative">Negative</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Learning_Disabilities">Learning Disabilities</label>
+                        <select name="Learning_Disabilities" id="Learning_Disabilities" required>
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="Gender">Gender</label>
+                        <select name="Gender" id="Gender" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="Family_Income">Family Income</label>
-                <select name="Family_Income" id="Family_Income" required>
-                    <option value="">Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
+            <!-- SUBMIT -->
+            <div class="submit-row">
+                <p class="submit-hint">All <strong>19 fields</strong> are required for an accurate prediction.</p>
+                <button type="submit" class="btn-submit">
+                    <span>Run Prediction</span>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M3 9H15M15 9L10 4M15 9L10 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
 
-            <div>
-                <label for="School_Type">School Type</label>
-                <select name="School_Type" id="School_Type" required>
-                    <option value="">Select</option>
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
-                </select>
-            </div>
+        </div>
+    </form>
 
-            <div>
-                <label for="Peer_Influence">Peer Influence</label>
-                <select name="Peer_Influence" id="Peer_Influence" required>
-                    <option value="">Select</option>
-                    <option value="Positive">Positive</option>
-                    <option value="Neutral">Neutral</option>
-                    <option value="Negative">Negative</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="Learning_Disabilities">Learning Disabilities</label>
-                <select name="Learning_Disabilities" id="Learning_Disabilities" required>
-                    <option value="">Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="Gender">Gender</label>
-                <select name="Gender" id="Gender" required>
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="submit-btn">Predict Exam Score</button>
-        </form>
-
-        <!-- Result Div -->
-        <div id="result">
+    <!-- ═══ RESULT ═══ -->
+    <div class="result-panel">
+        <div class="result-header">
+            <div class="result-dot"></div>
+            <span class="result-header-label">Prediction Output</span>
+        </div>
+        <div class="result-body" id="result">
             {{ result }}
         </div>
-    </main>
+    </div>
+
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+    <div class="footer-brand">Student Performance Factors</div>
+    <div class="footer-copy">© 2025 · All rights reserved</div>
+</footer>
+
+<script>
+    // Highlight filled fields
+    document.querySelectorAll('.field input, .field select').forEach(el => {
+        const update = () => {
+            el.closest('.field').dataset.filled = el.value ? 'true' : 'false';
+        };
+        el.addEventListener('input', update);
+        el.addEventListener('change', update);
+    });
+
+    // Submit loading state
+    document.getElementById('predictionForm').addEventListener('submit', function () {
+        const btn = this.querySelector('.btn-submit');
+        btn.innerHTML = '<span>Running…</span><svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="animation:spin 0.8s linear infinite"><path d="M9 2a7 7 0 1 1-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>';
+        btn.style.pointerEvents = 'none';
+    });
+</script>
+
+<style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 </body>
 </html>
